@@ -1,0 +1,43 @@
+{
+  "@@locale": "zh",
+  "appTitle": "Kukuri",
+  "navHome": "首页",
+  "navExplore": "探索",
+  "navLibrary": "资料库",
+  "navUser": "我的",
+  "actionSearch": "搜索",
+  "actionSettings": "设置",
+  "actionBack": "返回",
+  "actionClear": "清除",
+  "homeSearchHint": "搜索联系人、群聊或消息",
+  "placeholderSearch": "搜索",
+  "placeholderBody": "这个页面没有二级菜单。和 Venera 类似，应用外壳只提供顶部、底部和侧边导航；页面自己决定是否需要更多列。",
+  "searchHistory": "搜索历史",
+  "searchResultMessage": "搜索：{query}",
+  "@searchResultMessage": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAppearance": "外观",
+  "settingsReading": "阅读",
+  "settingsLibrary": "资料库",
+  "settingsNetwork": "网络",
+  "settingsLanguage": "语言",
+  "settingsAbout": "关于",
+  "settingsDetailBody": "这个设置分区拥有自己的详情内容。窄屏时分类列表会折叠进菜单按钮，当前选中的分类会保留在标题栏中。",
+  "languageDescription": "选择应用显示语言。",
+  "languageSystem": "跟随系统",
+  "languageEnglish": "英语",
+  "languageChinese": "中文",
+  "libraryRecentlyOpened": "最近打开",
+  "libraryPinnedBirds": "置顶鸟类",
+  "libraryFieldNotes": "野外笔记",
+  "libraryMigrationMap": "迁徙地图",
+  "libraryAudioSamples": "音频样本",
+  "libraryCollectionStats": "收藏统计",
+  "libraryMenu": "资料库菜单",
+  "libraryDetailBody": "资料库拥有自己的二级菜单。窄屏时菜单会折叠进标题栏，当前选中的项目会显示在详情内容上方。"
+}

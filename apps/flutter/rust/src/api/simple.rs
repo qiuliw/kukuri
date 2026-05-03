@@ -1,0 +1,13 @@
+use std::sync::Once;
+
+static INIT_APP: Once = Once::new();
+
+#[flutter_rust_bridge::frb(sync)] // Synchronous mode for simplicity of the demo
+pub fn greet(name: String) -> String {
+    format!("Hello, {name}!")
+}
+
+#[flutter_rust_bridge::frb(init)]
+pub fn init_app() {
+    INIT_APP.call_once(flutter_rust_bridge::setup_default_user_utils);
+}

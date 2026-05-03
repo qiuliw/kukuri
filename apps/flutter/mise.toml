@@ -1,0 +1,12 @@
+[env]
+# Project-local Flutter and Android SDK tools.
+# Activate in PowerShell with:
+#   mise activate pwsh | Out-String | Invoke-Expression
+ANDROID_HOME = "{{env.LOCALAPPDATA}}/Android/Sdk"
+FLUTTER_HOME = "D:/dev/tools/flutter"
+
+_.path = [
+  "{{env.FLUTTER_HOME}}/bin",
+  "{{env.ANDROID_HOME}}/emulator",
+  "{{env.ANDROID_HOME}}/platform-tools"
+]

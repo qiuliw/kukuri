@@ -1,0 +1,43 @@
+{
+  "@@locale": "en",
+  "appTitle": "Kukuri",
+  "navHome": "Home",
+  "navExplore": "Explore",
+  "navLibrary": "Library",
+  "navUser": "User",
+  "actionSearch": "Search",
+  "actionSettings": "Settings",
+  "actionBack": "Back",
+  "actionClear": "Clear",
+  "homeSearchHint": "Search contacts, groups, or messages",
+  "placeholderSearch": "Search",
+  "placeholderBody": "This page has no secondary menu. Like Venera, the app shell only provides the top, bottom, and side navigation surfaces; the page decides whether it needs more columns.",
+  "searchHistory": "Search History",
+  "searchResultMessage": "Search: {query}",
+  "@searchResultMessage": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAppearance": "Appearance",
+  "settingsReading": "Reading",
+  "settingsLibrary": "Library",
+  "settingsNetwork": "Network",
+  "settingsLanguage": "Language",
+  "settingsAbout": "About",
+  "settingsDetailBody": "This settings section owns its detail content. On narrow screens the category list collapses into the menu button, with the selected category kept in the header.",
+  "languageDescription": "Choose the app display language.",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageChinese": "Chinese",
+  "libraryRecentlyOpened": "Recently opened",
+  "libraryPinnedBirds": "Pinned birds",
+  "libraryFieldNotes": "Field notes",
+  "libraryMigrationMap": "Migration map",
+  "libraryAudioSamples": "Audio samples",
+  "libraryCollectionStats": "Collection stats",
+  "libraryMenu": "Library menu",
+  "libraryDetailBody": "Library owns this secondary menu. On narrow screens the menu collapses into the header, and the selected item remains visible above the detail content."
+}
