@@ -1671,6 +1671,7 @@
 
 .profile-overview-header {
   align-items: flex-start;
+  margin-bottom: 1rem;
 }
 
 .profile-overview-summary {

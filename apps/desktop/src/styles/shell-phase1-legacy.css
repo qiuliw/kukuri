@@ -161,6 +161,10 @@
   margin-top: 1rem;
 }
 
+.shell-phase1 .profile-overview-header {
+  margin-bottom: 1rem;
+}
+
 .shell-phase1 .empty-state {
   color: var(--muted-foreground-soft);
 }

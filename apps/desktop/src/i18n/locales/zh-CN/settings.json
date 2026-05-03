@@ -25,19 +25,25 @@
   },
   "communityNode": {
     "actions": {
+      "addNode": "添加节点",
       "clearNodes": "清除",
       "clearToken": "清除令牌",
       "saveNodes": "保存节点"
     },
+    "autoApproveLabel": "自动同意此节点的用户授权",
+    "baseUrlLabel": "基础 URL",
     "baseUrlsHint": "每行一个 HTTPS 基础 URL。",
-    "baseUrlsLabel": "基础 URL",
+    "baseUrlsLabel": "基础 URL（列表）",
     "baseUrlsPlaceholder": "https://community.example.com",
     "diagnostics": {
+      "autoApprove": "自动同意",
       "auth": "认证",
       "connectivityUrls": "连接 URL",
       "consent": "同意",
       "lastError": "最近错误",
       "nextStep": "下一步",
+      "retryAfter": "重试时间",
+      "sessionPhase": "会话阶段",
       "sessionActivation": "会话激活"
     },
     "editorMessage": {
@@ -46,9 +52,21 @@
     },
     "loading": "正在加载社区节点诊断…",
     "noNodes": "尚未配置社区节点。",
+    "nodesHint": "每个社区节点对应一个基础 URL 及是否自动同意策略。",
+    "nodesLabel": "已配置节点",
     "nodeSummary": "此节点的认证、同意和连接状态。",
+    "sessionPhases": {
+      "accepting": "正在接受",
+      "authenticating": "正在认证",
+      "connecting": "正在连接",
+      "idle": "空闲",
+      "ready": "就绪",
+      "refreshing": "正在刷新",
+      "retrying": "正在重试"
+    },
     "summary": "已配置 {{count}} 个",
     "title": "社区节点",
+    "unsavedNodeSummary": "节点有未保存的更改。请先保存再执行排查或认证相关操作。",
     "values": {
       "acceptPolicies": "请接受必需策略以解析连接 URL",
       "activeOnCurrentSession": "当前会话已生效",
@@ -92,7 +110,7 @@
     "peerTicket": "Peer 票据",
     "peerTicketPlaceholder": "nodeid@127.0.0.1:7777",
     "peerTickets": "Peer 票据",
-    "summary": "{{status}} / peers: {{count}}",
+    "summary": "{{status}} / 对端：{{count}}",
     "summaryDetailFallback": "尚无主题诊断",
     "title": "同步状态",
     "topicConnectivity": "主题连接详情",
@@ -114,9 +132,9 @@
     },
     "loading": "正在加载发现诊断…",
     "messages": {
-      "saved": "更新发现种子不会改变 runtime contract。",
-      "unsaved": "发现种子有未保存更改。",
-      "viewLocked": "环境变量覆盖了发现种子，因此无法编辑。"
+      "saved": "更新发现种子不会改变运行中的连接约定。",
+      "unsaved": "发现种子有未保存的更改。",
+      "viewLocked": "环境变量已覆盖发现种子，无法在此编辑。"
     },
     "metrics": {
       "connect": "连接方式",
@@ -125,11 +143,14 @@
     },
     "seedPeersHint": "每行一个 endpoint id。地址提示可选。",
     "seedPeersLabel": "种子 Peer",
-    "seedPeersPlaceholder": "node_id or node_id@host:port",
+    "seedPeersPlaceholder": "node_id 或 node_id@主机:端口",
     "title": "发现"
   },
   "reactions": {
     "summary": "自有 {{owned}} 个 / 已保存 {{saved}} 个",
+    "editCrop": "调整裁剪",
+    "cropTitle": "裁剪回应图片",
+    "cropDescription": "拖动以调整位置，并缩放以选择要保留的方形区域。",
     "myCustomReactions": "我的自定义回应",
     "myCustomReactionsHint": "在这里创建 128x128 的方形回应图片。",
     "uploadLabel": "上传图片",

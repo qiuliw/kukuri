@@ -3,6 +3,8 @@
     "accept": "接受",
     "add": "添加",
     "authenticate": "认证",
+    "bookmark": "书签",
+    "cancel": "取消",
     "clear": "清除",
     "copyLink": "复制链接",
     "copyHash": "复制哈希值",
@@ -19,6 +21,8 @@
     "quoteRepost": "引用转发",
     "react": "回应",
     "refresh": "刷新",
+    "remove": "移除",
+    "removeBookmark": "移除书签",
     "manageReactions": "管理回应",
     "restoreDraft": "恢复草稿",
     "repost": "转发",
@@ -28,7 +32,8 @@
     "rotate": "轮换",
     "save": "保存",
     "unmute": "取消静音",
-    "unfollow": "取消关注"
+    "unfollow": "取消关注",
+    "zoom": "缩放"
   },
   "composer": {
     "clearQuoteRepost": "清除引用转发",

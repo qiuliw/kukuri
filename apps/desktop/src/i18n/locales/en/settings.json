@@ -148,6 +148,9 @@
   },
   "reactions": {
     "summary": "{{owned}} owned / {{saved}} saved",
+    "editCrop": "Edit crop",
+    "cropTitle": "Crop reaction image",
+    "cropDescription": "Drag to reposition and use zoom to choose the visible square.",
     "myCustomReactions": "My custom reactions",
     "myCustomReactionsHint": "Create square 128x128 reaction images here.",
     "uploadLabel": "Upload image",
