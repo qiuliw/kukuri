@@ -29,6 +29,7 @@ mod private_channels;
 mod reactions;
 mod social;
 mod sync;
+mod blob_announcement;
 mod timeline;
 
 fn social_graph_propagation_timeout() -> Duration {

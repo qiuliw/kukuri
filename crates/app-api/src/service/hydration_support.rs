@@ -48,34 +48,101 @@ pub(crate) async fn hydrate_object_projection_from_replica_with_policy(
     Ok(hydrated)
 }
 
+async fn maybe_announce_blob(
+    blob_service: &dyn BlobService,
+    hint_transport: Option<&dyn HintTransport>,
+    topic_id: Option<&str>,
+    channel_id: Option<&ChannelId>,
+    hash: &BlobHash,
+    mime: &str,
+    bytes: u64,
+) {
+    let Some(transport) = hint_transport else {
+        return;
+    };
+    let Some(topic) = topic_id else {
+        return;
+    };
+
+    if !blob_service.mark_blob_announced(hash).await {
+        return;
+    }
+
+    let hint_topic = channel_hint_topic_for(topic, channel_id);
+    let hint = GossipHint::BlobAvailable {
+        topic_id: TopicId::new(topic.to_string()),
+        hash: hash.clone(),
+        mime: mime.to_string(),
+        bytes,
+    };
+    if let Err(error) = transport.publish_hint(&hint_topic, hint).await {
+        tracing::warn!(
+            hash = %hash.as_str(),
+            error = %error,
+            "failed to publish BlobAvailable hint"
+        );
+    }
+}
+
 pub(crate) async fn hydrate_object_projection_from_record(
     blob_service: &dyn BlobService,
     projection_store: &dyn ProjectionStore,
     replica: &ReplicaId,
     record: DocRecord,
+    hint_transport: Option<&dyn HintTransport>,
+    topic_id: Option<&str>,
+    channel_id: Option<&ChannelId>,
 ) -> Result<bool> {
     let header: CanonicalPostHeader = serde_json::from_slice(&record.value)?;
     let content = match &header.payload_ref {
         PayloadRef::InlineText { text } => Some(text.clone()),
-        PayloadRef::BlobText { hash, .. } => {
+        PayloadRef::BlobText {
+            hash,
+            mime,
+            bytes,
+        } => {
             let payload = fetch_projection_blob_text(blob_service, hash).await;
-            projection_store
-                .mark_blob_status(
+            let status = match payload {
+                Some(_) => BlobCacheStatus::Available,
+                None => BlobCacheStatus::Missing,
+            };
+            let announce_blob_text = status == BlobCacheStatus::Available;
+            projection_store.mark_blob_status(hash, status).await?;
+
+            if announce_blob_text {
+                maybe_announce_blob(
+                    blob_service,
+                    hint_transport,
+                    topic_id,
+                    channel_id,
                     hash,
-                    match payload {
-                        Some(_) => BlobCacheStatus::Available,
-                        None => BlobCacheStatus::Missing,
-                    },
+                    mime.as_str(),
+                    *bytes,
                 )
-                .await?;
+                .await;
+            }
+
             payload
         }
     };
     for attachment in &header.attachments {
         let status = best_effort_blob_cache_status(blob_service, &attachment.hash).await;
+        let announce_attachment = status == BlobCacheStatus::Available;
         projection_store
             .mark_blob_status(&attachment.hash, status)
             .await?;
+        if announce_attachment {
+            maybe_announce_blob(
+                blob_service,
+                hint_transport,
+                topic_id,
+                channel_id,
+                &attachment.hash,
+                attachment.mime.as_str(),
+                attachment.bytes,
+            )
+            .await;
+        }
     }
     projection_store
         .put_object_projection(projection_row_from_header(&header, content, replica))
@@ -89,6 +156,9 @@ pub(crate) async fn hydrate_object_projection_from_key(
     projection_store: &dyn ProjectionStore,
     replica: &ReplicaId,
     key: &str,
+    hint_transport: Option<&dyn HintTransport>,
+    topic_id: Option<&str>,
+    channel_id: Option<&ChannelId>,
 ) -> Result<bool> {
     let Some(record) = docs_sync
         .query_replica(replica, DocQuery::Exact(key.to_string()))
@@ -98,7 +168,16 @@ pub(crate) async fn hydrate_object_projection_from_key(
     else {
         return Ok(false);
     };
-    hydrate_object_projection_from_record(blob_service, projection_store, replica, record).await
+    hydrate_object_projection_from_record(
+        blob_service,
+        projection_store,
+        replica,
+        record,
+        hint_transport,
+        topic_id,
+        channel_id,
+    )
+    .await
 }
 
 pub(crate) async fn hydrate_reaction_cache_from_replica_with_policy(
@@ -530,6 +609,8 @@ pub(crate) async fn hydrate_subscription_event_with_services(
     topic_id: &str,
     replica: &ReplicaId,
     key: &str,
+    hint_transport: Option<&dyn HintTransport>,
+    channel_id: Option<&ChannelId>,
 ) -> Result<usize> {
     if key.starts_with("objects/") && key.ends_with("/state") {
         return Ok(hydrate_object_projection_from_key(
@@ -538,6 +619,9 @@ pub(crate) async fn hydrate_subscription_event_with_services(
             projection_store,
             replica,
             key,
+            hint_transport,
+            Some(topic_id),
+            channel_id,
         )
         .await? as usize);
     }
@@ -579,6 +663,8 @@ pub(crate) async fn hydrate_subscription_hint_with_services(
     topic_id: &str,
     replica: &ReplicaId,
     hint: &GossipHint,
+    hint_transport: Option<&dyn HintTransport>,
+    channel_id: Option<&ChannelId>,
 ) -> Result<usize> {
     match hint {
         GossipHint::TopicObjectsChanged { objects, .. } => {
@@ -600,6 +686,9 @@ pub(crate) async fn hydrate_subscription_hint_with_services(
                     projection_store,
                     replica,
                     stable_key("objects", &format!("{}/state", object.object_id)).as_str(),
+                    hint_transport,
+                    Some(topic_id),
+                    channel_id,
                 )
                 .await? as usize;
             }
@@ -614,6 +703,9 @@ pub(crate) async fn hydrate_subscription_hint_with_services(
                     projection_store,
                     replica,
                     stable_key("objects", &format!("{}/state", object_id.as_str())).as_str(),
+                    hint_transport,
+                    Some(topic_id),
+                    channel_id,
                 )
                 .await? as usize;
             }
@@ -653,7 +745,8 @@ pub(crate) async fn hydrate_subscription_hint_with_services(
         | GossipHint::Typing { .. }
         | GossipHint::LivePresence { .. }
         | GossipHint::DirectMessageFrame { .. }
-        | GossipHint::DirectMessageAck { .. } => Ok(0),
+        | GossipHint::DirectMessageAck { .. }
+        | GossipHint::BlobAvailable { .. } => Ok(0),
     }
 }
 
@@ -665,7 +758,8 @@ pub(crate) fn hint_targets_topic(hint: &GossipHint, topic: &str) -> bool {
         | GossipHint::SessionChanged { topic_id, .. }
         | GossipHint::LivePresence { topic_id, .. }
         | GossipHint::DirectMessageFrame { topic_id, .. }
-        | GossipHint::DirectMessageAck { topic_id, .. } => topic_id.as_str() == topic,
+        | GossipHint::DirectMessageAck { topic_id, .. }
+        | GossipHint::BlobAvailable { topic_id, .. } => topic_id.as_str() == topic,
         GossipHint::ThreadUpdated { .. } | GossipHint::ProfileUpdated { .. } => true,
     }
 }

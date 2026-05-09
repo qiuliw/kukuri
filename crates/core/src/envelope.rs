@@ -60,6 +60,12 @@ pub enum GossipHint {
         topic_id: TopicId,
         ack: DirectMessageAckV1,
     },
+    BlobAvailable {
+        topic_id: TopicId,
+        hash: BlobHash,
+        mime: String,
+        bytes: u64,
+    },
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]

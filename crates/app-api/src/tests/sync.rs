@@ -1123,6 +1123,8 @@ async fn topic_session_hints_retry_until_manifest_blob_is_available() {
             session_id: session_id.clone(),
             object_kind: "live-session".into(),
         },
+        None,
+        None,
     )
     .await
     .expect("hydrate live hint");

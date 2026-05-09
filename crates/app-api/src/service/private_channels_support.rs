@@ -712,6 +712,8 @@ impl AppService {
                                 topic.as_str(),
                                 &replica_for_task,
                                 event.key.as_str(),
+                                Some(hint_transport.as_ref()),
+                                channel_id.as_ref(),
                             ).await {
                                 Ok(count) => count,
                                 Err(error) => {
@@ -812,6 +814,24 @@ impl AppService {
                                     let _ = projection_store.clear_expired_live_presence(now).await;
                                     *last_sync.lock().await = Some(now);
                                 }
+                                GossipHint::BlobAvailable { hash, .. } => {
+                                    if !event.source_peer.is_empty() {
+                                        if let Err(error) = blob_service
+                                            .record_blob_announcement(
+                                                hash,
+                                                event.source_peer.as_str(),
+                                            )
+                                            .await
+                                        {
+                                            warn!(
+                                                hash = %hash.as_str(),
+                                                source_peer = %event.source_peer,
+                                                error = %error,
+                                                "failed to record blob announcement"
+                                            );
+                                        }
+                                    }
+                                }
                                 _ => {
                                     let mut hydrated = match hydrate_subscription_hint_with_services(
                                         docs_sync.as_ref(),
@@ -820,6 +840,8 @@ impl AppService {
                                         topic.as_str(),
                                         &replica_for_task,
                                         &event.hint,
+                                        Some(hint_transport.as_ref()),
+                                        channel_id.as_ref(),
                                     )
                                     .await {
                                         Ok(count) => count,

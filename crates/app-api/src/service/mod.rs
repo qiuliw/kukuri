@@ -9,6 +9,7 @@ pub(crate) use futures_util::StreamExt;
 pub(crate) use kukuri_blob_service::{BlobService, BlobStatus, MemoryBlobService, StoredBlob};
 pub(crate) use kukuri_core::{
     AssetRole, AuthorProfileDocV1, AuthorProfilePostDocV1, AuthorProfileRepostDocV1,
+    BlobHash,
     CanonicalPostHeader, ChannelAudienceKind, ChannelId, ChannelRef, ChannelSharingState,
     CreatePrivateChannelInput, CustomReactionAssetDocV1, CustomReactionAssetSnapshotV1,
     DirectMessageAttachmentKind, DirectMessageAttachmentManifestV1,

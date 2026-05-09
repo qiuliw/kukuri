@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::str::FromStr;
 use std::sync::Arc;
 
@@ -81,6 +81,22 @@ pub trait BlobService: Send + Sync {
     async fn assist_peer_ids(&self) -> Result<Vec<String>> {
         Ok(Vec::new())
     }
+
+    async fn record_blob_announcement(
+        &self,
+        _hash: &BlobHash,
+        _endpoint_id: &str,
+    ) -> Result<()> {
+        Ok(())
+    }
+
+    async fn mark_blob_announced(&self, _hash: &BlobHash) -> bool {
+        false
+    }
+
+    async fn priority_fetch_peers_for(&self, _hash: &BlobHash) -> Vec<iroh::EndpointAddr> {
+        Vec::new()
+    }
 }
 
 #[derive(Clone)]
@@ -91,6 +107,10 @@ pub struct IrohBlobService {
     seed_peers: Arc<Mutex<BTreeMap<String, iroh::EndpointAddr>>>,
     imported_peers: Arc<Mutex<BTreeMap<String, iroh::EndpointAddr>>>,
     remote_fetch_retries: Arc<Mutex<RemoteFetchRetryState>>,
+    /// hash → endpoint_ids that announced they have this blob
+    announced_by_peers: Arc<Mutex<HashMap<String, BTreeSet<String>>>>,
+    /// hashes we have already broadcast a BlobAvailable hint for (dedup)
+    locally_announced: Arc<RwLock<HashSet<String>>>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -114,6 +134,8 @@ impl IrohBlobService {
             seed_peers: Arc::new(Mutex::new(BTreeMap::new())),
             imported_peers: Arc::new(Mutex::new(BTreeMap::new())),
             remote_fetch_retries: Arc::new(Mutex::new(RemoteFetchRetryState::default())),
+            announced_by_peers: Arc::new(Mutex::new(HashMap::new())),
+            locally_announced: Arc::new(RwLock::new(HashSet::new())),
         }
     }
 
@@ -250,18 +272,50 @@ impl IrohBlobService {
         Ok(())
     }
 
+    async fn ordered_remote_fetch_peers(&self, hash_text: &str) -> (Vec<iroh::EndpointAddr>, usize) {
+        let announced = self
+            .announced_by_peers
+            .lock()
+            .await
+            .get(hash_text)
+            .cloned()
+            .unwrap_or_default();
+        let all = self.fetch_peers().await;
+        let mut priority = Vec::new();
+        let mut fallback = Vec::new();
+        for peer in all {
+            if announced.contains(&peer.id.to_string()) {
+                priority.push(peer);
+            } else {
+                fallback.push(peer);
+            }
+        }
+        let announced_peer_count = priority.len();
+        priority.extend(fallback);
+        (priority, announced_peer_count)
+    }
+
     async fn fetch_blob_from_remote(
         &self,
         hash_text: &str,
         hash: iroh_blobs::Hash,
         local_error: impl std::fmt::Display,
     ) -> Result<Option<Vec<u8>>> {
-        let peers = self.fetch_peers().await;
+        let (mut peers, announced_peer_count) = self.ordered_remote_fetch_peers(hash_text).await;
+        if peers.is_empty() {
+            peers = self.fetch_peers().await;
+        }
         info!(
             hash = %hash_text,
             error = %local_error,
             configured_peer_count = peers.len(),
             "blob fetch local miss, trying remote peers"
+        );
+        info!(
+            hash = %hash_text,
+            announced_peer_count = announced_peer_count,
+            total_peer_count = peers.len(),
+            "blob fetch peer selection"
         );
         for imported_peer in peers {
             let candidates = self.connect_candidates(&imported_peer).await;
@@ -485,6 +539,28 @@ impl BlobService for IrohBlobService {
 
     async fn assist_peer_ids(&self) -> Result<Vec<String>> {
         Ok(self.available_fetch_peer_ids().await)
+    }
+
+    async fn record_blob_announcement(&self, hash: &BlobHash, endpoint_id: &str) -> Result<()> {
+        self.record_learned_peer(endpoint_id).await?;
+        self.announced_by_peers
+            .lock()
+            .await
+            .entry(hash.as_str().to_string())
+            .or_default()
+            .insert(endpoint_id.to_string());
+        Ok(())
+    }
+
+    async fn mark_blob_announced(&self, hash: &BlobHash) -> bool {
+        self.locally_announced
+            .write()
+            .await
+            .insert(hash.as_str().to_string())
+    }
+
+    async fn priority_fetch_peers_for(&self, hash: &BlobHash) -> Vec<iroh::EndpointAddr> {
+        self.ordered_remote_fetch_peers(hash.as_str()).await.0
     }
 }
 
@@ -776,5 +852,55 @@ mod tests {
 
         let payload = receiver.fetch_blob(&stored.hash).await.expect("fetch blob");
         assert_eq!(payload, Some(b"learned-peer-fetch".to_vec()));
+    }
+
+    #[tokio::test]
+    async fn mark_blob_announced_is_idempotent() {
+        let node = IrohDocsNode::memory().await.expect("memory node");
+        let svc = IrohBlobService::new(node);
+        let hash = BlobHash::new("abc123".to_string());
+        assert!(svc.mark_blob_announced(&hash).await);
+        assert!(!svc.mark_blob_announced(&hash).await);
+    }
+
+    #[tokio::test]
+    async fn announced_peers_are_preferred_in_fetch_order() {
+        let sender_dir = tempdir().expect("sender tempdir");
+        let receiver_dir = tempdir().expect("receiver tempdir");
+        let config = TransportNetworkConfig::loopback();
+
+        let sender_node = IrohDocsNode::persistent_with_config(sender_dir.path(), config.clone())
+            .await
+            .expect("sender node");
+        let receiver_node =
+            IrohDocsNode::persistent_with_config(receiver_dir.path(), config.clone())
+                .await
+                .expect("receiver node");
+
+        let sender = IrohBlobService::new(sender_node.clone());
+        let receiver = IrohBlobService::new(receiver_node);
+
+        let ticket = loopback_ticket(sender_node.endpoint(), &config);
+        receiver
+            .import_peer_ticket(&ticket)
+            .await
+            .expect("import ticket");
+
+        let stored = sender
+            .put_blob(b"announce-order".to_vec(), "text/plain")
+            .await
+            .expect("put blob");
+
+        let sender_id = sender_node.endpoint().id().to_string();
+        receiver
+            .record_blob_announcement(&stored.hash, sender_id.as_str())
+            .await
+            .expect("record announcement");
+
+        let ordered = receiver
+            .priority_fetch_peers_for(&stored.hash)
+            .await;
+        assert!(!ordered.is_empty());
+        assert_eq!(ordered[0].id.to_string(), sender_id);
     }
 }
