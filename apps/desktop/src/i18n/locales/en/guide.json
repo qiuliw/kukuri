@@ -1,0 +1,29 @@
+{
+  "choice": {
+    "title": "Welcome to kukuri",
+    "subtitle": "Get started by creating a new identity or importing an existing one.",
+    "createAction": "Create new identity",
+    "importAction": "Import existing identity"
+  },
+  "backup": {
+    "title": "Back up your secret key",
+    "pubkeyLabel": "Your public key",
+    "warning": "Save this key somewhere safe. It cannot be recovered if lost.",
+    "nsecLabel": "Secret key (nsec)",
+    "copy": "Copy to clipboard",
+    "copied": "Copied!",
+    "savedCheckbox": "I have saved my secret key in a safe place",
+    "continue": "Continue",
+    "loading": "Starting…"
+  },
+  "import": {
+    "title": "Import identity",
+    "desc": "Paste your nsec1… (bech32) or 64-character hex secret key.",
+    "invalidFormat": "Invalid format. Expected nsec1… or 64-character hex.",
+    "action": "Import and start",
+    "loading": "Restarting…"
+  },
+  "common": {
+    "back": "Back"
+  }
+}

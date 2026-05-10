@@ -21,6 +21,7 @@
     "followingCount": "{{count}} Following",
     "loading": "Loading profile…",
     "mutedCount": "{{count}} Muted",
+    "logout": "Log out",
     "noBio": "No profile bio published yet.",
     "postCount": "Public posts",
     "title": "Profile"

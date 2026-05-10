@@ -276,6 +276,10 @@ impl DesktopRuntime {
         &self.db_path
     }
 
+    pub fn author_keys_pubkey_hex(&self) -> String {
+        self.author_keys.public_key_hex()
+    }
+
     async fn persist_private_channel_capabilities_from_app(&self) -> Result<()> {
         persist_private_channel_capabilities(
             &self.db_path,

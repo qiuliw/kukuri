@@ -16,6 +16,7 @@ pub use community_node::{
     CommunityNodeTargetRequest, SetCommunityNodeConfigNode, SetCommunityNodeConfigRequest,
 };
 pub use discovery::{DiscoveryConfig, SetDiscoverySeedsRequest};
+pub use identity::{delete_identity_files, write_identity_to_file};
 pub use paths::resolve_db_path_from_env;
 pub use requests::{
     AuthorRequest, BookmarkCustomReactionRequest, BookmarkPostRequest, CreateAttachmentRequest,

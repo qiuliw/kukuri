@@ -9,6 +9,7 @@ import profileEn from './locales/en/profile.json';
 import channelsEn from './locales/en/channels.json';
 import liveEn from './locales/en/live.json';
 import gameEn from './locales/en/game.json';
+import guideEn from './locales/en/guide.json';
 import commonJa from './locales/ja/common.json';
 import shellJa from './locales/ja/shell.json';
 import settingsJa from './locales/ja/settings.json';
@@ -16,6 +17,7 @@ import profileJa from './locales/ja/profile.json';
 import channelsJa from './locales/ja/channels.json';
 import liveJa from './locales/ja/live.json';
 import gameJa from './locales/ja/game.json';
+import guideJa from './locales/ja/guide.json';
 import commonZhCn from './locales/zh-CN/common.json';
 import shellZhCn from './locales/zh-CN/shell.json';
 import settingsZhCn from './locales/zh-CN/settings.json';
@@ -23,6 +25,7 @@ import profileZhCn from './locales/zh-CN/profile.json';
 import channelsZhCn from './locales/zh-CN/channels.json';
 import liveZhCn from './locales/zh-CN/live.json';
 import gameZhCn from './locales/zh-CN/game.json';
+import guideZhCn from './locales/zh-CN/guide.json';
 
 export const SUPPORTED_LOCALES = ['ja', 'en', 'zh-CN'] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
@@ -53,6 +56,7 @@ export const resources = {
     channels: channelsEn,
     common: commonEn,
     game: gameEn,
+    guide: guideEn,
     live: liveEn,
     profile: profileEn,
     settings: settingsEn,
@@ -62,6 +66,7 @@ export const resources = {
     channels: channelsJa,
     common: commonJa,
     game: gameJa,
+    guide: guideJa,
     live: liveJa,
     profile: profileJa,
     settings: settingsJa,
@@ -71,6 +76,7 @@ export const resources = {
     channels: channelsZhCn,
     common: commonZhCn,
     game: gameZhCn,
+    guide: guideZhCn,
     live: liveZhCn,
     profile: profileZhCn,
     settings: settingsZhCn,
@@ -91,7 +97,16 @@ if (!i18n.isInitialized) {
       },
       defaultNS: 'common',
       fallbackNS: 'common',
-      ns: ['common', 'shell', 'settings', 'profile', 'channels', 'live', 'game'],
+      ns: [
+        'common',
+        'shell',
+        'settings',
+        'profile',
+        'channels',
+        'live',
+        'game',
+        'guide',
+      ],
       react: {
         useSuspense: false,
       },

@@ -32,6 +32,11 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::identity::get_guide_status,
+            commands::identity::create_identity,
+            commands::identity::confirm_guide,
+            commands::identity::import_identity,
+            commands::identity::logout,
             commands::posts::create_post,
             commands::posts::create_repost,
             commands::reactions::toggle_reaction,

@@ -66,6 +66,7 @@ export function DesktopShellPage({
   api = runtimeApi,
   theme,
   onThemeChange,
+  onLogout,
 }: DesktopShellPageProps) {
   const { t, i18n: i18nInstance } = useTranslation([
     'common',
@@ -955,6 +956,7 @@ export function DesktopShellPage({
             handleRelationshipAction={handleRelationshipAction}
             handleMuteAction={handleMuteAction}
             handleOpenOriginalTopic={handleOpenOriginalTopic}
+            onLogout={onLogout}
           />
         }
         detailPaneStack={detailPaneStack}

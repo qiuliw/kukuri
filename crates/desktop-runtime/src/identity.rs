@@ -344,6 +344,21 @@ fn delete_file_if_exists(path: &Path) -> Result<()> {
     Ok(())
 }
 
+/// 写入 identity-key 文件和 identity-store 标记（供引导页调用）
+pub fn write_identity_to_file(db_path: &Path, secret_hex: &str) -> Result<()> {
+    persist_secret_to_file(db_path, secret_hex)?;
+    write_backend_marker(db_path, BACKEND_FILE)?;
+    Ok(())
+}
+
+/// 删除所有 identity 相关文件（退出账号 / 创建新身份前清空用）
+pub fn delete_identity_files(db_path: &Path) -> Result<()> {
+    delete_file_if_exists(&key_file_path(db_path))?;
+    delete_file_if_exists(&legacy_key_file_path(db_path))?;
+    delete_file_if_exists(&backend_marker_path(db_path))?;
+    Ok(())
+}
+
 trait KeyringStore: Send + Sync {
     fn get_password(&self, service: &str, account: &str) -> Result<Option<String>>;
     fn set_password(&self, service: &str, account: &str, secret: &str) -> Result<()>;

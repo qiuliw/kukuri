@@ -21,6 +21,7 @@
     "followingCount": "{{count}} フォロー中",
     "loading": "プロフィールを読み込み中…",
     "mutedCount": "{{count}} ミュート中",
+    "logout": "ログアウト",
     "noBio": "まだプロフィール文が公開されていません。",
     "postCount": "公開投稿",
     "title": "プロフィール"

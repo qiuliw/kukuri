@@ -1,0 +1,29 @@
+{
+  "choice": {
+    "title": "欢迎使用 kukuri",
+    "subtitle": "创建新身份或导入已有身份以开始使用。",
+    "createAction": "创建新身份",
+    "importAction": "导入已有身份"
+  },
+  "backup": {
+    "title": "备份私钥",
+    "pubkeyLabel": "你的公钥",
+    "warning": "请将私钥保存在安全的地方，丢失后无法找回。",
+    "nsecLabel": "私钥（nsec）",
+    "copy": "复制到剪贴板",
+    "copied": "已复制！",
+    "savedCheckbox": "我已将私钥保存在安全的地方",
+    "continue": "继续",
+    "loading": "正在启动…"
+  },
+  "import": {
+    "title": "导入身份",
+    "desc": "粘贴你的 nsec1…（bech32）或 64 位十六进制私钥。",
+    "invalidFormat": "格式无效，请输入 nsec1… 或 64 位十六进制。",
+    "action": "导入并启动",
+    "loading": "正在重启…"
+  },
+  "common": {
+    "back": "返回"
+  }
+}

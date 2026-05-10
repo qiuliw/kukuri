@@ -21,6 +21,7 @@
     "followingCount": "已关注 {{count}} 位",
     "loading": "正在加载资料…",
     "mutedCount": "已静音 {{count}} 位",
+    "logout": "退出账号",
     "noBio": "尚未发布个人简介。",
     "postCount": "公开帖子",
     "title": "资料"

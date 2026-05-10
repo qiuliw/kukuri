@@ -204,6 +204,7 @@ export type DesktopShellStore = DesktopShellState & {
 export type DesktopShellPageProps = AppProps & {
   theme: DesktopTheme;
   onThemeChange: (theme: DesktopTheme) => void;
+  onLogout?: () => void;
 };
 
 export const DEFAULT_TOPIC = 'kukuri:topic:demo';

@@ -107,6 +107,7 @@ type DesktopShellPrimaryWorkspaceProps = {
   handleRelationshipAction: (authorPubkey: string, following: boolean) => Promise<void>;
   handleMuteAction: (authorPubkey: string, muted: boolean) => Promise<void>;
   handleOpenOriginalTopic: (topicId: string) => Promise<void>;
+  onLogout?: () => void;
 };
 
 export function DesktopShellPrimaryWorkspace({
@@ -152,6 +153,7 @@ export function DesktopShellPrimaryWorkspace({
   handleRelationshipAction,
   handleMuteAction,
   handleOpenOriginalTopic,
+  onLogout,
 }: DesktopShellPrimaryWorkspaceProps) {
   const {
     activeTopic,
@@ -676,6 +678,7 @@ export function DesktopShellPrimaryWorkspace({
                 followedCount={socialConnections.followed.length}
                 mutedCount={socialConnections.muted.length}
                 onEdit={openProfileEditor}
+                onLogout={onLogout}
                 onOpenFollowing={() => openProfileConnections('following')}
                 onOpenFollowed={() => openProfileConnections('followed')}
                 onOpenMuted={() => openProfileConnections('muted')}

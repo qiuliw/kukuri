@@ -15,6 +15,7 @@ type ProfileOverviewPanelProps = {
   followedCount: number;
   mutedCount: number;
   onEdit: () => void;
+  onLogout?: () => void;
   onOpenFollowing: () => void;
   onOpenFollowed: () => void;
   onOpenMuted: () => void;
@@ -31,6 +32,7 @@ export function ProfileOverviewPanel({
   followedCount,
   mutedCount,
   onEdit,
+  onLogout,
   onOpenFollowing,
   onOpenFollowed,
   onOpenMuted,
@@ -43,7 +45,11 @@ export function ProfileOverviewPanel({
         <div className='profile-overview-summary'>
           <div className='profile-overview-avatar'>
             {picture ? (
-              <img src={picture} alt={`${authorLabel} avatar`} className='profile-overview-image' />
+              <img
+                src={picture}
+                alt={`${authorLabel} avatar`}
+                className='profile-overview-image'
+              />
             ) : (
               <span>{authorLabel.slice(0, 1).toUpperCase()}</span>
             )}
@@ -57,11 +63,18 @@ export function ProfileOverviewPanel({
           <Button variant='secondary' type='button' onClick={onEdit}>
             {t('overview.edit')}
           </Button>
+          {onLogout ? (
+            <Button variant='secondary' type='button' onClick={onLogout}>
+              {t('overview.logout')}
+            </Button>
+          ) : null}
         </div>
       </CardHeader>
 
       {status === 'loading' ? <Notice>{t('overview.loading')}</Notice> : null}
-      {status === 'error' && error ? <Notice tone='destructive'>{error}</Notice> : null}
+      {status === 'error' && error ? (
+        <Notice tone='destructive'>{error}</Notice>
+      ) : null}
 
       <div className='shell-main-stack'>
         <div className='profile-overview-connections'>

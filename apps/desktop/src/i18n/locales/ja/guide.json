@@ -1,0 +1,29 @@
+{
+  "choice": {
+    "title": "kukuri へようこそ",
+    "subtitle": "新しいIDを作成するか、既存のIDをインポートして始めましょう。",
+    "createAction": "新しいIDを作成",
+    "importAction": "既存のIDをインポート"
+  },
+  "backup": {
+    "title": "秘密鍵をバックアップ",
+    "pubkeyLabel": "あなたの公開鍵",
+    "warning": "この鍵を安全な場所に保存してください。紛失すると復元できません。",
+    "nsecLabel": "秘密鍵（nsec）",
+    "copy": "クリップボードにコピー",
+    "copied": "コピーしました！",
+    "savedCheckbox": "秘密鍵を安全な場所に保存しました",
+    "continue": "続行",
+    "loading": "起動中…"
+  },
+  "import": {
+    "title": "IDのインポート",
+    "desc": "nsec1…（bech32）または64文字の16進数秘密鍵を貼り付けてください。",
+    "invalidFormat": "無効な形式です。nsec1… または64文字の16進数を入力してください。",
+    "action": "インポートして起動",
+    "loading": "再起動中…"
+  },
+  "common": {
+    "back": "戻る"
+  }
+}
