@@ -5,6 +5,7 @@ import type {
   ProfileInput,
 } from '@/lib/api';
 import { fileToCreateAttachment } from '@/lib/attachments';
+import { normalizePrivateChannelAccessTokenInput } from '@/lib/internalLinks';
 
 import {
   DEFAULT_COMMUNITY_NODE_CONFIG,
@@ -615,7 +616,9 @@ export function createProfileTopicChannelActions({
   async function handleImportChannelAccessToken(token: string) {
     setChannelActionPending('join');
     try {
-      const preview = await api.importChannelAccessToken(token.trim());
+      const preview = await api.importChannelAccessToken(
+        normalizePrivateChannelAccessTokenInput(token)
+      );
       await activateImportedPrivateChannel(
         preview.topic_id,
         preview.channel_id,

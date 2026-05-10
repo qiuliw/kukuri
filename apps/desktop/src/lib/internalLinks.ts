@@ -233,20 +233,58 @@ export function parseShareTokenKind(rawValue: string): ChannelAccessTokenKind | 
   return parseChannelAccessTokenMetadata(rawValue)?.kind ?? null;
 }
 
+/** Decodes `token` query value: base64 → URI-decoded string (raw JSON for Rust), or legacy plain string. */
+function decodeAccessPreviewTokenQueryValue(encoded: string): string {
+  const trimmed = encoded.trim();
+  if (!trimmed) {
+    return '';
+  }
+  try {
+    return decodeURIComponent(atob(trimmed));
+  } catch {
+    return trimmed;
+  }
+}
+
+/**
+ * Strips `kukuri://access-preview?token=…` wrappers so preview/import receive the same raw token
+ * string Rust parses (`serde_json` invite/grant/share envelope JSON, or legacy `invite:` prefixes).
+ */
+export function normalizePrivateChannelAccessTokenInput(rawValue: string): string {
+  const trimmed = rawValue.trim();
+  if (!trimmed.startsWith('kukuri://access-preview?')) {
+    return trimmed;
+  }
+  const queryString = trimmed.slice('kukuri://access-preview?'.length);
+  const params = new URLSearchParams(queryString);
+  const encoded = params.get('token')?.trim() ?? '';
+  if (!encoded) {
+    return trimmed;
+  }
+  return decodeAccessPreviewTokenQueryValue(encoded);
+}
+
 export function parseChannelAccessPreviewDeepLink(rawValue: string): ShareTokenReference | null {
   try {
-    const url = new URL(rawValue.trim());
-    if (url.protocol !== 'kukuri:' || url.hostname !== 'access-preview') {
+    const trimmed = rawValue.trim();
+    if (!trimmed.startsWith('kukuri://access-preview?')) {
       return null;
     }
-    const token = url.searchParams.get('token')?.trim() ?? '';
-    if (!token) {
+
+    const queryString = trimmed.slice('kukuri://access-preview?'.length);
+    const params = new URLSearchParams(queryString);
+    const encoded = params.get('token')?.trim() ?? '';
+    if (!encoded) {
       return null;
     }
+
+    const token = decodeAccessPreviewTokenQueryValue(encoded);
+
     const tokenKind = parseShareTokenKind(token);
     if (!tokenKind) {
       return null;
     }
+
     return {
       kind: 'share_token',
       token,

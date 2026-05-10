@@ -23,6 +23,7 @@ import i18n from '@/i18n';
 import { formatLocalizedTime, getResolvedLocale } from '@/i18n/format';
 import {
   buildTopicLink,
+  normalizePrivateChannelAccessTokenInput,
   parseChannelAccessPreviewDeepLink,
   type InternalSmartReference,
 } from '@/lib/internalLinks';
@@ -467,13 +468,14 @@ export function DesktopShellPage({
   }, []);
   const handleOpenSharePreview = useCallback(
     async (token: string) => {
+      const normalized = normalizePrivateChannelAccessTokenInput(token);
       setSharePreviewOpen(true);
-      setSharePreviewToken(token);
+      setSharePreviewToken(normalized);
       setSharePreviewData(null);
       setSharePreviewError(null);
       setSharePreviewLoading(true);
       try {
-        const preview = await api.previewChannelAccessToken(token);
+        const preview = await api.previewChannelAccessToken(normalized);
         setSharePreviewData(preview);
       } catch (error) {
         setSharePreviewError(
