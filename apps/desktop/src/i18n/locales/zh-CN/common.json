@@ -83,6 +83,7 @@
     "localFailed": "发布失败",
     "localPosting": "发布中…",
     "localSyncing": "同步中…",
+    "pendingPosts": "显示 {{count}} 条新帖子",
     "quoteRepost": "引用转发",
     "reposted": "已转发"
   },
