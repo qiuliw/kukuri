@@ -31,6 +31,19 @@ Blob がキャッシュで利用可能になったとき、`GossipHint::BlobAvai
 2. community / private channel 等の購読境界と整合したキー空間での索引。
 3. インターネット上のブートストラップやグローバル DHT に依存しない閉じた運用。文献では private DHT、application-specific DHT、overlay DHT 等と呼ばれるモデルに相当する。
 
+### 廃止と改善
+
+**廃止（段階的）**
+
+- **対象**: ADR 0024 の `GossipHint::BlobAvailable` による gossip ヒント宣告（`publish_hint` 経由の topic / channel 配送、`maybe_announce_blob` の宣告パス）。本 ADR の実装と contract 移行が完了するまで、0024 のコードパスは移行期間の互換として残す。
+- **理由**: ヒントの届き方が購読トポロジに強く依存し、帯域・冗長が増えやすい；索引として距離ベースルーティングの保証が弱い。詳細は Alternatives の案 A・Decision §1・`Migration` を正とする。
+
+**改善**
+
+- **索引パス**: `blob_hash` とスコープをキーに、接続済み gossip ピア上のオーバーレイ DHT で PUT / GET（または ANNOUNCE / FIND_PROVIDERS 相当）し、全体 flood に近い宣告拡散への依存を下げる（典型例として O(log N) ホップのルーティングを前提）。
+- **責務分離**: ヒント索引と、gossip による docs / オブジェクト複製のデータ面を分ける（0024 が前提とした `record_blob_announcement` 蓄積とフェッチ順最適化の**ヒント源**を、オーバーレイ索引へ載せ替える）。
+- **閉域・二層**: エンドポイント発見（ADR 0008）と索引レイヤを混同しない。グローバル Mainline bootstrap は本索引では使わず、既存 gossip セッションのピアからルーティングテーブルを組む（`Relation to Iroh` と整合）。
+
 ### トランスポート発見 DHT との区別
 
 | レイヤ | 役割（kukuri） | 代表 ADR / 実装 |
