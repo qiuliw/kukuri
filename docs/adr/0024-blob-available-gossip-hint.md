@@ -2,7 +2,11 @@
 
 ## Status
 
-Accepted
+Accepted（実装の現行仕様として有効）
+
+## Deprecation notice
+
+**2026-05-11**: Blob 可用性の **gossip ヒント宣告（本 ADR）** は、長期的には **Gossip スコープ内オーバーレイ DHT による提供者索引**へ移行する予定。意図・置換案は `docs/adr/0025-gossip-overlay-dht-blob-index.md`。0025 が実装に置き換わるまで、本 ADR のコードパスは移行期間の互換として残す。
 
 ## Date
 
@@ -14,6 +18,7 @@ Accepted
 
 ## Related
 
+- `docs/adr/0025-gossip-overlay-dht-blob-index.md`（宣告機構の置換案・オーバーレイ DHT）
 - `docs/adr/0011-kukuri-protocol-v1-draft.md`（Hint / Blob / Topic の用語）
 - `docs/adr/0018-channel-first-sidebar-and-unified-epoch-lifecycle.md`（private channel と replica）
 - `crates/core/src/envelope.rs` — `GossipHint::BlobAvailable`
